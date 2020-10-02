@@ -6,14 +6,17 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve --open",
-    "build": "ng build --prod",
+    "build-ng": "ng build --prod",
+    "build": "npm run build-ng && npm run scully",
     "build-netlify": "npm run populate-netlify-secrets && npm run build",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
     "version": "ts-node --project tsconfig.scripts.json scripts/version.ts",
     "icon": "ts-node --project tsconfig.scripts.json scripts/icon.ts",
-    "populate-netlify-secrets": "echo $FIREBASE_CONFIG_TS > src/environments/firebaseConfig.prod.ts && echo $FIREBASE_CONFIG_TS > src/environments/firebaseConfig.ts"
+    "populate-netlify-secrets": "echo $FIREBASE_CONFIG_TS > src/environments/firebaseConfig.prod.ts && echo $FIREBASE_CONFIG_TS > src/environments/firebaseConfig.ts",
+    "scully": "scully",
+    "scully:serve": "scully serve"
   },
   "private": true,
   "dependencies": {
@@ -36,6 +39,9 @@
     "@ionic-native/media": "^5.25.0",
     "@ionic/angular": "^5.0.0",
     "@ionic/pwa-elements": "^3.0.1",
+    "@scullyio/init": "^1.0.1",
+    "@scullyio/ng-lib": "^1.0.0",
+    "@scullyio/scully": "^1.0.0",
     "capacitor-firebase-auth": "^2.3.2",
     "cordova-android": "^9.0.0",
     "cordova-plugin-file": "^6.0.2",

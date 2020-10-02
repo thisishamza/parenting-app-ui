@@ -18,6 +18,7 @@ import { environment } from "src/environments/environment";
 import { IntroTutorialPageModule } from "./feature/intro-tutorial/intro-tutorial.module";
 import { PrivacyPageModule } from "./feature/privacy/privacy.module";
 import { AppTermsPageModule } from "./feature/app-terms/app-terms.module";
+import { ScullyLibModule } from '@scullyio/ng-lib';
 
 const introModules = [
   IntroTutorialPageModule,
@@ -38,6 +39,7 @@ const introModules = [
     AngularFireModule.initializeApp(environment.firebaseConfig),
     AngularFireAuthModule,
     ...introModules,
+    ScullyLibModule,
   ],
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },

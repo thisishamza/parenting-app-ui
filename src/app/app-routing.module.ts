@@ -9,22 +9,17 @@ const routes: Routes = [
       import("./feature/home/home.module").then((m) => m.HomePageModule),
   },
   {
-    path: "",
-    redirectTo: "home",
-    pathMatch: "full",
-  },
-  {
     path: "activities",
     loadChildren: () =>
       import("./feature/activities/activities.module").then(
         (m) => m.ActivitiesPageModule
       ),
   },
-  {
+  /*{
     path: "songs",
     loadChildren: () =>
       import("./feature/songs/songs.module").then((m) => m.SongsPageModule),
-  },
+  },*/
   {
     path: "goals",
     loadChildren: () =>
@@ -85,20 +80,25 @@ const routes: Routes = [
         (m) => m.CalendarPageModule
       ),
   },
-  {
+  /*{
     path: "privacy",
     loadChildren: () =>
       import("./feature/privacy/privacy.module").then(
         (m) => m.PrivacyPageModule
       ),
-  },
-  {
+  },*/
+  /* {
     path: "app-terms",
     loadChildren: () =>
       import("./feature/app-terms/app-terms.module").then(
         (m) => m.AppTermsPageModule
       ),
-  },
+  }, */
+  {
+    path: "",
+    redirectTo: "home",
+    pathMatch: "full",
+  }
 ];
 
 @NgModule({
