@@ -13,16 +13,20 @@
     "plh-copy-app-data": "ts-node src/plh-copy-app-data.ts",
     "sync-plh-content": "npm run gdrive-download && npm run plh-data-convert && npm run plh-copy-app-data",
     "version": "ts-node  src/version.ts",
-    "xlsx-to-json": "ts-node  src/plh-xlsx-to-json/index.ts"
+    "xlsx-to-json": "ts-node  src/plh-xlsx-to-json/index.ts",
+    "figma-anim-download": "ts-node src/figma-anim-download/index.ts"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/node-fetch": "^2.5.7",
     "dotenv": "^8.2.0",
+    "figma-types": "^0.4.0",
     "fs-extra": "^9.0.1",
     "glob": "^7.1.6",
     "googleapis": "39",
     "ncp": "^2.0.0",
+    "node-fetch": "^2.6.1",
     "xlsx": "^0.16.6"
   },
   "devDependencies": {
