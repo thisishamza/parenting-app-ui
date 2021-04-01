@@ -45,7 +45,7 @@ export class ComboBoxModalComponent implements OnInit {
 
     this.inputPosition =
       getStringParamFromTemplateRow(this.row, "input_position", "bottom") == "top";
-    this.maxLength = getNumberParamFromTemplateRow(this.row, "max_length", 30);
+    this.maxLength = getNumberParamFromTemplateRow(this.row, "max_length", null);
     this.placeholder = getStringParamFromTemplateRow(this.row, "answer_placeholder", "");
     if (this.formData) {
       this.form = this.formData;
