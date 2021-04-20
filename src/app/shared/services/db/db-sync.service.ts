@@ -41,9 +41,13 @@ export class SyncService {
       }
     });
 
-    return this.httpClient.post("http://34.90.115.242/api/changes", JSON.stringify(changes), {
-      headers,
-    });
+    return this.httpClient.post(
+      "http://plh-db.idems.international/api/changes",
+      JSON.stringify(changes),
+      {
+        headers,
+      }
+    );
   }
 
   private registerToEvents(offlineService: OfflineService) {
