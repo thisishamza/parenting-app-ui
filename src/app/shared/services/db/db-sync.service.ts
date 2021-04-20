@@ -42,7 +42,7 @@ export class SyncService {
     });
 
     return this.httpClient.post(
-      "http://plh-db.idems.international/api/changes",
+      "https://plh-db.idems.international/api/changes",
       JSON.stringify(changes),
       {
         headers,
