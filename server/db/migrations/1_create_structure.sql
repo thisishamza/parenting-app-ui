@@ -13,7 +13,7 @@ ALTER TABLE session_actions ADD CONSTRAINT pksession_actions PRIMARY KEY (id);
 CREATE TABLE changes (
   id SERIAL,
   rev integer,
-  source integer,
+  source varchar(255),
   type varchar(255) NOT NULL,
   table_name varchar(255) NOT NULL,
   key varchar(255) NOT NULL,

@@ -1,12 +1,11 @@
 import { Injectable } from "@angular/core";
 import Dexie, { DbEvents } from "dexie";
 import "dexie-observable";
-import "dexie-syncable";
-import "./db-sync.service";
 import { ICreateChange, IDatabaseChange, IDeleteChange, IUpdateChange } from "dexie-observable/api";
 import { Subject } from "scripts/node_modules/rxjs";
 import { arrayToHashmapArray } from "../../utils";
 import { EventService } from "../event/event.service";
+import { SyncService } from "./db-sync.service";
 
 const db = new Dexie("plh-app-db");
 
@@ -37,6 +36,7 @@ const DB_TABLES = {
   habits: "habitId",
   habit_activity_ideas: "++id,flowName",
   habit_occurrence: "++id,habitId,created",
+  changes: "++id, value",
 };
 export type IDBTable = keyof typeof DB_TABLES;
 /**
@@ -66,8 +66,9 @@ export class DbService {
    * Note - this only tracks create and update events, which will emit data value to the subject
    */
   private tableChanges$: { [key in IDBTable]: Subject<any> } = {} as any;
-  constructor(private eventService: EventService) {
+  constructor(private eventService: EventService, private syncService: SyncService) {
     Object.keys(DB_TABLES).forEach((table_id) => (this.tableChanges$[table_id] = new Subject()));
+    this.syncService.setDb(db);
   }
 
   async init() {
@@ -91,16 +92,9 @@ export class DbService {
         // return location.reload();
       }
     });
-    db.syncable.connect("websocket", "ws://127.0.0.1:8080/");
-    db.syncable.on("statusChanged", function (newStatus, url) {
-      console.log("Sync Status changed: " + Dexie.Syncable.StatusTexts[newStatus]);
-    });
-
     this._addEventListeners();
   }
   deleteDatabase() {
-    db.syncable.disconnect("ws://127.0.0.1:8080/");
-    db.syncable.delete("ws://127.0.0.1:8080/");
     return this.db.delete();
   }
 
@@ -131,20 +125,25 @@ export class DbService {
     const on = db.on as DbEvents & IDBChangEvent;
     on("changes", (changes) => {
       changes.forEach((change) => {
-        switch (change.type) {
-          case 1: // CREATED
-            change = change as ICreateChange;
-            console.log("[DB CREATED]", change);
-            this.tableChanges$[change.table].next(change.obj);
-            break;
-          case 2: // UPDATED
-            change = change as IUpdateChange;
-            console.log("[DB CHANGED]", change);
-            this.tableChanges$[change.table].next(change.obj);
-            break;
-          case 3: // DELETED
-            change = change as IDeleteChange;
-            console.log("[DB DELETED]", change);
+        if (change.table !== "changes") {
+          switch (change.type) {
+            case 1: // CREATED
+              change = change as ICreateChange;
+              console.log("[DB CREATED]", change);
+              this.tableChanges$[change.table].next(change.obj);
+              this.syncService.addChange(change);
+              break;
+            case 2: // UPDATED
+              change = change as IUpdateChange;
+              console.log("[DB CHANGED]", change);
+              this.tableChanges$[change.table].next(change.obj);
+              this.syncService.addChange(change);
+              break;
+            case 3: // DELETED
+              change = change as IDeleteChange;
+              console.log("[DB DELETED]", change);
+              this.syncService.addChange(change);
+          }
         }
       });
     });
