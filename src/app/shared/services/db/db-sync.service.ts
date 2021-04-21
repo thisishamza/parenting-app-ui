@@ -2,6 +2,11 @@ import { Injectable } from "@angular/core";
 import { OfflineService } from "./offline.service";
 import { HttpClient, HttpHeaders } from "@angular/common/http";
 
+const enum STATUS {
+  SYNCED = 1,
+  NOT_SYNCED = 0,
+}
+
 @Injectable({
   providedIn: "root",
 })
@@ -40,7 +45,6 @@ export class SyncService {
         };
       }
     });
-
     return this.httpClient.post(
       "https://plh-db.idems.international/api/changes",
       JSON.stringify(changes),
@@ -70,43 +74,52 @@ export class SyncService {
       this.addToIndexedDb(change);
     } else {
       //post request to server
-      const changes = await this.db.table("changes").toArray();
-      const postChangesRequest = await this.postChanges([change, ...changes]);
+      const changes = await this.getNotSyncedChanges();
+      const postChangesRequest = await this.postChanges([...changes, change]);
       postChangesRequest.subscribe(
-        (res) => {
-          console.log(res);
-        },
-        () => {
-          this.addToIndexedDb(change);
+        (res) => console.log(res),
+        (error) => console.log(error),
+        async () => {
+          await this.addToIndexedDb(change, STATUS.SYNCED);
+          await this.db
+            .table("changes")
+            .where({ synced: STATUS.NOT_SYNCED })
+            .modify({ synced: STATUS.SYNCED });
         }
       );
     }
   }
 
   // ---------- add todo to the indexedDB on offline mode
-  private async addToIndexedDb(change: any) {
+  private async addToIndexedDb(change: any, synced: number = STATUS.NOT_SYNCED) {
     this.db
       .table("changes")
-      .add(change)
-      .then(async () => {
-        const allItems: any[] = await this.db.table("changes").toArray();
-        console.log("saved in DB, DB is now", allItems);
-      })
+      .add({ changes: change, synced })
       .catch((e) => {
         console.log("Error: " + (e.stack || e));
       });
   }
   //  ---------- send the todos to the backend to be added inside the database
   private async sendItemsFromIndexedDb() {
-    console.log("sending items");
-
-    const allItems: any[] = await this.db.table("changes").toArray();
-    //bulk update to server
-    const postChangesRequest = await this.postChanges(allItems);
+    const changes = await this.getNotSyncedChanges();
+    const postChangesRequest = await this.postChanges(changes);
     postChangesRequest.subscribe(
       (res) => console.log(res),
       (error) => console.log(error),
-      () => this.db.table("changes").clear()
+      async () => {
+        await this.db
+          .table("changes")
+          .where({ synced: STATUS.NOT_SYNCED })
+          .modify({ synced: STATUS.SYNCED });
+      }
     );
+  }
+
+  private async getNotSyncedChanges() {
+    const allItems: any[] = await this.db
+      .table("changes")
+      .where({ synced: STATUS.NOT_SYNCED })
+      .toArray();
+    return allItems.map((item) => item.changes);
   }
 }

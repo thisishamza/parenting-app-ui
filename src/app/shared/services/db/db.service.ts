@@ -36,7 +36,7 @@ const DB_TABLES = {
   habits: "habitId",
   habit_activity_ideas: "++id,flowName",
   habit_occurrence: "++id,habitId,created",
-  changes: "++id, value",
+  changes: "++id, changes, synced",
 };
 export type IDBTable = keyof typeof DB_TABLES;
 /**
