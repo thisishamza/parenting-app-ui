@@ -54,11 +54,13 @@ export class AppComponent {
         await this.surveyService.runSurvey("introSplash");
         await this.surveyService.runSurvey("analytics");
         await this.userMetaService.setUserMeta({ first_app_open: new Date().toISOString() });
+        /*
         // temporary fix: set initial fields to avoid doubling up of quickstart buttons
         this.templateService.setField(".w_1on1_completion_status", "uncompleted");
         this.templateService.setField("second_week", "false");
         this.templateService.setField(".w_praise_completion_status", "uncompleted");
         this.templateService.setField("third_week", "false");
+        */
         await this.tourService.startTour("intro_tour");
       }
       this.skipTutorial = true;
@@ -68,6 +70,7 @@ export class AppComponent {
       let current_date = this.userMetaService.getUserMeta("current_date");
       this.templateService.setField("first_app_open", user.first_app_open);
       this.templateService.setField("current_date", current_date);
+      /*     
       if (old_date != current_date) {
         this.templateService.setField("daily_relax_done", "false");
       }
@@ -84,6 +87,7 @@ export class AppComponent {
       } else {
         this.templateService.setField("third_week", "false");
       }
+      */
       this.templateService.setField(
         "days_since_start",
         (
