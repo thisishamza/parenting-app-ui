@@ -1,9 +1,11 @@
 {
   "compilerOptions": {
-    "target": "ES2015",
-    "lib": ["ES2015", "dom"],
+    "target": "ESNext",
+    "lib": ["ESNext", "dom"],
     "types": ["cypress", "node"],
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "esModuleInterop": true
   },
   "include": ["**/*.ts"]
 }
