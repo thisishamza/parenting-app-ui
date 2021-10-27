@@ -27,21 +27,29 @@ export class TemplateTranslateService {
     if (currentLanguage) {
       this.setLanguage(currentLanguage, false);
     } else {
-      this.setLanguage(DEFAULT_LANGUAGE, true);
+      this.setLanguage(DEFAULT_LANGUAGE, false);
     }
   }
 
-  /** Set the local storage variable that tracks the app language */
-  setLanguage(code: string, updateDB = true) {
-    if (code) {
-      if (updateDB) {
-        this.localStorageService.setString(APP_LANGUAGE_FIELD, code);
-      }
+  /**
+   * Set the local storage variable that tracks the app language
+   * @param reload perform a hard reload to reinitialise all data when
+   * language changed during runtime (ignored in constructor)
+   * */
+  setLanguage(code: string, reload = true) {
+    if (code && code !== this.app_language) {
+      this.localStorageService.setString(APP_LANGUAGE_FIELD, code);
       this.app_language = code;
       this.translation_strings = TRANSLATION_STRINGS[code] || {};
       // update observable for subscribers
       this.app_language$.next(code);
       console.log("[Language Set]", code);
+      if (reload) {
+        // HACK - force full reload after short timeout for UI updates
+        setTimeout(() => {
+          location.reload();
+        }, 50);
+      }
     }
   }
 
